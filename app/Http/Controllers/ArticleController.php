@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Article;
 use Illuminate\Http\Request;
 
 class ArticleController extends Controller
@@ -11,15 +12,21 @@ class ArticleController extends Controller
      */
     public function index()
     {
-        //
+        return Article::all();
     }
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
+
     {
-        //
+        $request->Validate([
+            'title' => 'required | string|max:255',
+            'body' => 'required | string',
+        ]);
+        return Article::create($request->all());
+
     }
 
     /**
@@ -27,7 +34,11 @@ class ArticleController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $article = Article::find($id);
+        if(!$article){
+            return response()->json(['message' => 'article non trouvé'],404);
+        }
+        return $article;
     }
 
     /**
@@ -35,7 +46,17 @@ class ArticleController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $article = Article::find($id);
+        if(!$article){
+            return response()->json(['message' => 'article non trouvé'],404);
+        }
+        $request->Validate([
+            'title' => 'required | string|max:255',
+            'body' => 'required | string',
+        ]);
+        $article->update($request->all());
+        return $article;
+
     }
 
     /**
@@ -43,6 +64,11 @@ class ArticleController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $article = Article::find($id);
+        if(!$article){
+            return response()->json(['message' => 'article non trouvé'],404);
+        }
+        $article->delete($request->all());
+        return response()->json(['message' => 'article supprimer avec succes']);
     }
 }
